@@ -11,10 +11,6 @@ add_action( 'admin_init', 'rehatched_settings_init' );
 
 function rehatched_admin_settings_page()
 {
-    /** Register */
-    wp_register_style('itg-plugin-page-css', plugins_url('css/bootstrap.min.css', __FILE__));
-    /** Enqueue */
-    wp_enqueue_style('itg-plugin-page-css');
     ?>
     <div class="container-fluid">
         <h2>WP Freelancer Settings</h2>

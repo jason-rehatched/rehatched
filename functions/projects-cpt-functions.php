@@ -2,7 +2,7 @@
 
 //Change "Add title" in new post input
 
-function change_project_title( $title ){
+function change_project_title(){
     $screen = get_current_screen();
 
     if  ( $screen->post_type == 'projects' ) {

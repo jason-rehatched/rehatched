@@ -1,8 +1,11 @@
 <?php
 
+require_once(ABSPATH . 'wp-admin/includes/screen.php');
+
 //Change Publish Button Text
 function change_publish_button( $text ) {
-    if ( $text == 'Publish' )     // Your button text
+    $screen = get_current_screen();
+    if ( $text == 'Publish' && $screen->post_type == 'invoices')     // Your button text
         $text = 'Send Invoice';
     return $text;
 }

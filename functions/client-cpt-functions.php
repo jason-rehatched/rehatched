@@ -1,5 +1,7 @@
 <?php
 
+require_once(ABSPATH . 'wp-admin/includes/screen.php');
+
 //Change "Add title" in new post input
 
 function change_client_title( $title ){

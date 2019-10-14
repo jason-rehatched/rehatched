@@ -14,9 +14,14 @@ add_filter( 'enter_title_here', 'change_project_title' );
 //Add Complete Button
 function top_form_edit_projects($post)
 {
+    $post_data = array(
+            'ID' => $post->ID,
+    );
     if( 'projects' == $post->post_type )
     {
         echo '<input id="complete_project" class="button button-primary button-large" type="submit" name="complete_project" value="Mark Project Complete">';
+
+        wp_update_post($post_data);
     }
 }
 
@@ -68,10 +73,10 @@ function save_post_meta_boxes_projects(){
     if ( get_post_status( $post->ID ) === 'auto-draft' ) {
         return;
     }
-    update_post_meta( $post->ID, "client_name", sanitize_text_field( $_POST[ "client_name" ] ) );
-    update_post_meta( $post->ID, "project_notes", sanitize_text_field( $_POST[ "project_notes" ] ) );
-    update_post_meta( $post->ID, "start_date", sanitize_text_field( $_POST[ "start_date" ] ) );
-    update_post_meta( $post->ID, "end_date", sanitize_text_field( $_POST[ "end_date" ] ) );
+    update_post_meta( $post->ID, "project_client_name", sanitize_text_field( $_POST[ "project_client_name" ] ) );
+    update_post_meta( $post->ID, "project_notations", sanitize_text_field( $_POST[ "project_notations" ] ) );
+    update_post_meta( $post->ID, "project_start_date", $_POST[ "project_start_date" ]  );
+    update_post_meta( $post->ID, "project_end_date", $_POST[ "project_end_date" ] );
 }
 add_action( 'save_post', 'save_post_meta_boxes_projects' );
 
@@ -79,20 +84,20 @@ function post_meta_box_project_info($post)
 {
     ?>
     <label for="client_name">Client Name</label>
-    <?php wp_dropdown_users( array( 'role' => 'client', 'name' => 'client_name', 'id' => 'client_name' ) ); ?>
+    <?php wp_dropdown_users( array( 'role' => 'client', 'name' => 'project_client_name', 'id' => 'project_client_name' ) ); ?>
     <br>
     <label for="start_date">Project Start Date</label>
-    <input type="date" id="start_date" name="start_date" value="<?php echo get_post_meta($post->ID, 'start_date', true) ?>" />
+    <input type="date" id="start_date" name="project_start_date" value="<?php echo get_post_meta($post->ID, 'project_start_date', true) ?>" />
     <br>
     <label for="start_date">Project End Date</label>
-    <input type="date" id="end_date" name="end_date" value="<?php echo get_post_meta($post->ID, 'end_date', true) ?>" />
+    <input type="date" id="end_date" name="project_end_date" value="<?php echo get_post_meta($post->ID, 'project_end_date', true) ?>" />
     <?php
 }
 
 function post_meta_box_project_notes($post)
 {
     ?>
-    <textarea name="project_notes" id="client_notes" cols="60" rows="7"><?php echo get_post_meta($post->ID, 'project_notes', true) ?></textarea>
+    <textarea name="project_notations" id="client_notes" cols="60" rows="7"><?php echo get_post_meta($post->ID, 'project_notations', true) ?></textarea>
     <?php
 }
 

@@ -1,6 +1,7 @@
 <?php
 
 include 'settings.php';
+include 'shortcodes.php';
 
 //Add Admin Menu Items
 add_action( 'admin_menu', 'my_admin_menu' );

@@ -14,21 +14,12 @@ add_filter( 'gettext', 'change_publish_button', 10, 2 );
 //Send Invoice Function
 function send_invoice_email()
 {
-    $client = sanitize_text_field( $_POST[ "client_name" ] );
-    $nice_name = get_userdata($client);
-    $message = sanitize_text_field( $_POST[ "invoice_message" ] );
-    $date = sanitize_text_field( $_POST[ "due_date" ] );
-    $amount = sanitize_text_field( $_POST[ "invoice_amount" ] );
-    $body = 'Dear ' . $nice_name->first_name . ', '. "\n".'
-            You have an invoice in the amount of: $' . $amount . ' due.  
-            Please pay the invoice no later than ' . $date . '.' ."\n" . $message;
-
-    wp_mail('jason@rehatched.com', 'Invoice Due', $body);
+    wp_mail('jason@rehatched.com', 'Invoice Due', do_shortcode($_POST[ "invoice_message" ]));
 }
 add_action('publish_invoices', 'send_invoice_email');
 
 //Change "Add title" in new post input
-function change_invoice_title( $title ){
+function change_invoice_title(){
     $screen = get_current_screen();
 
     if  ( $screen->post_type == 'invoices' ) {
@@ -82,11 +73,11 @@ function save_post_meta_boxes_invoices(){
     if ( get_post_status( $post->ID ) === 'auto-draft' ) {
         return;
     }
-    update_post_meta( $post->ID, "client_name", sanitize_text_field( $_POST[ "client_name" ] ) );
+    update_post_meta( $post->ID, "invoice_client_name", sanitize_text_field( $_POST[ "invoice_client_name" ] ) );
     update_post_meta( $post->ID, "due_date", sanitize_text_field( $_POST[ "due_date" ] ) );
     update_post_meta( $post->ID, "invoice_amount", sanitize_text_field( $_POST[ "invoice_amount" ] ) );
     update_post_meta( $post->ID, "invoice_notes", sanitize_text_field( $_POST[ "invoice_notes" ] ) );
-    update_post_meta( $post->ID, "invoice_message", sanitize_text_field( $_POST[ "invoice_message" ] ) );
+    update_post_meta( $post->ID, "invoice_message", $_POST[ "invoice_message" ]);
     update_post_meta( $post->ID, "invoice_project", sanitize_text_field( $_POST[ "invoice_project" ] ) );
 }
 add_action( 'save_post', 'save_post_meta_boxes_invoices' );
@@ -95,7 +86,7 @@ function post_meta_box_invoice_info($post)
 {
     ?>
     <label for="client_name">Client Name</label>
-    <?php wp_dropdown_users( array( 'role' => 'client', 'name' => 'client_name', 'id' => 'client_name' ) ); ?>
+    <?php wp_dropdown_users( array( 'role' => 'client', 'name' => 'invoice_client_name', 'id' => 'invoice_client_name' ) ); ?>
     <br>
     <label for="due_date">Due Date</label>
     <input type="date" id="due_date" name="due_date" value="<?php echo get_post_meta($post->ID, 'due_date', true) ?>" />
@@ -115,8 +106,16 @@ function post_meta_box_invoice_notes($post)
 function post_meta_box_invoice_message($post)
 {
     ?>
-    <textarea name="invoice_message" id="invoice_message" cols="60" rows="7"><?php echo get_post_meta($post->ID, 'invoice_message', true) ?></textarea>
+    <small class="description">Use shortcodes [amount], [client], and [date] to display the amount, client name and due date in your message.</small>
     <?php
+    wp_editor(
+            get_post_meta($post->ID, 'invoice_message', true),
+        'client_invoice_message', array(
+        'quicktags' => true,
+        'textarea_name' => 'invoice_message',
+        'media_buttons' => false,
+
+    ));
 }
 
 function post_meta_box_invoice_project()
